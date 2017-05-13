@@ -1,0 +1,11 @@
+server:
+  port: 80
+spring:
+  data:
+    mongodb:
+      uri: mongodb://git.ynpay.cc:30001/rainbow-api-user
+
+  jackson:
+      date-format: yyyy-MM-dd HH:mm:ss
+      default-property-inclusion: non_null
+      time-zone: GMT+8
