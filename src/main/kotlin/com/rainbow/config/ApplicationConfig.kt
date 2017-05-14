@@ -20,6 +20,6 @@ open class ApplicationConfig : WebMvcConfigurerAdapter() {
     open fun apiInterceptor() = BaseInterceptor()
 
     override fun addInterceptors(registry: InterceptorRegistry) {
-        registry.addInterceptor(apiInterceptor()).addPathPatterns("/api/v1/**")
+        registry.addInterceptor(apiInterceptor())
     }
 }

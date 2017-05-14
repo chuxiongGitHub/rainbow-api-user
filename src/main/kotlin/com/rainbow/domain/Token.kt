@@ -13,6 +13,8 @@ import java.util.*
  */
 @Document(collection = "token")
 class Token() : IDEntity() {
+    // 客户端 UUID
+    var client: String? = null
     //用户UUID
     var user: String? = null
 
@@ -29,7 +31,8 @@ class Token() : IDEntity() {
     var multiLogin: Int? = null
 
 
-    constructor(user: String, multiLogin: Int = 1) : this() {
+    constructor(client: String,user: String, multiLogin: Int = 1) : this() {
+        this.client=client
         this.user = user
         this.status = 1
         this.firstTime = Date()

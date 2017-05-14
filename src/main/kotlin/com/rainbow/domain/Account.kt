@@ -3,6 +3,7 @@
  */
 package com.rainbow.domain
 
+import com.rainbow.commons.AccountType
 import com.rainbow.commons.IDEntity
 import jodd.util.RandomString
 import org.springframework.data.mongodb.core.index.Indexed

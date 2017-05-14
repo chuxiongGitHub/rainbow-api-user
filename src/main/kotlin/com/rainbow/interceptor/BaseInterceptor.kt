@@ -4,14 +4,20 @@
 package com.rainbow.interceptor
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.rainbow.commons.ApiUtils
 import com.rainbow.commons.exception.UserApiException
 import com.rainbow.config.ApiConfig
+import com.rainbow.domain.ClientAccount
+import com.rainbow.domain.UserAccount
+import com.rainbow.service.AccountService
+import com.rainbow.service.AuthService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.web.method.HandlerMethod
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -23,30 +29,27 @@ import javax.servlet.http.HttpServletResponse
 class BaseInterceptor : HandlerInterceptorAdapter() {
 
     @Autowired
-    lateinit private var mongoTemplate: MongoTemplate
+    lateinit private var accountService: AccountService
 
-    override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any?): Boolean {
+    @Autowired
+    lateinit private var authService: AuthService
 
-        try {
-            val rainbowId = if (request.getHeader("R-DEBUG") != "true") {
-                request.getHeader("RAINBOW-USER") ?: throw UserApiException("rainbowId不能为空", HttpStatus.BAD_REQUEST)
-            } else {
-                "rainbow123"
+    @Autowired
+    lateinit private var utils: ApiUtils
+
+    override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
+        if (handler is HandlerMethod) {
+            if (handler.methodParameters.find { it.parameterType == ClientAccount::class.java } != null) {
+                val username = request.getHeader("X-RAINBOW-CLIENT") ?: throw UserApiException("请求头缺少X-RAINBOW-CLIENT")
+                val client = accountService.getClient(username) ?: throw UserApiException("无效的X-RAINBOW-CLIENT")
+                request.setAttribute("client", utils.beanCopy(client, ClientAccount::class.java))
             }
-
-            val rainbow = mongoTemplate.findOne(Query.query(Criteria("rainbowId").`is`(rainbowId).and("status").`is`(1)), ApiConfig::class.java) ?: throw UserApiException("无效的应用授权")
-
-            request.setAttribute("rainbow", rainbow)
-
-            return true
-        } catch (ex: UserApiException) {
-            response.status = 400
-            response.contentType = MediaType.APPLICATION_JSON_UTF8_VALUE
-            val stream = response.outputStream
-            stream.write(ObjectMapper().writeValueAsBytes(mapOf("code" to ex.status, "message" to (ex.message ?: "未知错误"))))
-            stream.flush()
-            stream.close()
-            return false
+            if (handler.methodParameters.find { it.parameterType == UserAccount::class.java } != null) {
+                val session = request.getHeader("X-RAINBOW-SESSIO") ?: throw UserApiException("缺少请求头X-RAINBOW-SESSION")
+                val user = authService.getUserFromSession(session) ?: throw UserApiException("无效的X-RAINBOW-SESSION")
+                request.setAttribute("user", utils.beanCopy(user, UserAccount::class.java))
+            }
         }
+        return true
     }
 }
