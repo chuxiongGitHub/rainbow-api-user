@@ -3,7 +3,7 @@ server:
 spring:
   data:
     mongodb:
-      uri: mongodb://git.ynpay.cc:30001/rainbow-api-user
+      uri: mongodb://127.0.0.1:27017/rainbow-api-user
 
   jackson:
       date-format: yyyy-MM-dd HH:mm:ss

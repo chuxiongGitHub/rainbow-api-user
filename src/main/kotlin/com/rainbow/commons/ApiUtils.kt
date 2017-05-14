@@ -13,7 +13,7 @@ import org.springframework.util.DigestUtils
  *每日进步一小点.
  */
 @Component
-class Utils {
+class ApiUtils {
 
     private val REGEX_MOBILE = "^1\\d{10}$".toRegex()
 
