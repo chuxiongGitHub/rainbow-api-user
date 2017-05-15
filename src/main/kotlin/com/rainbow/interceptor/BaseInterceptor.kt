@@ -45,7 +45,7 @@ class BaseInterceptor : HandlerInterceptorAdapter() {
                 request.setAttribute("client", utils.beanCopy(client, ClientAccount::class.java))
             }
             if (handler.methodParameters.find { it.parameterType == UserAccount::class.java } != null) {
-                val session = request.getHeader("X-RAINBOW-SESSIO") ?: throw UserApiException("缺少请求头X-RAINBOW-SESSION")
+                val session = request.getHeader("X-RAINBOW-SESSION") ?: throw UserApiException("缺少请求头X-RAINBOW-SESSION")
                 val user = authService.getUserFromSession(session) ?: throw UserApiException("无效的X-RAINBOW-SESSION")
                 request.setAttribute("user", utils.beanCopy(user, UserAccount::class.java))
             }

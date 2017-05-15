@@ -23,7 +23,6 @@ class AuthController {
     @PostMapping("/register")
     fun register(@RequestAttribute client: ClientAccount, @RequestBody params: Map<String, String>) = authService.register(client, params)
 
-
     @PostMapping("/login")
     fun login(
             @RequestAttribute client: ClientAccount,
@@ -34,4 +33,6 @@ class AuthController {
 
     @DeleteMapping("/logout")
     fun logout(@RequestHeader("X-RAINBOW-SESSION", required = false, defaultValue = "") session: String) = authService.logout(session)
+
+
 }
