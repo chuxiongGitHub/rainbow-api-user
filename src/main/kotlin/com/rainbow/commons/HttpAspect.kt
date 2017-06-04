@@ -4,7 +4,7 @@
 package com.rainbow.commons
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.rainbow.domain.LogHelper
+import com.rainbow.entity.LogHelper
 import org.aspectj.lang.JoinPoint
 import org.aspectj.lang.annotation.*
 import org.slf4j.LoggerFactory
