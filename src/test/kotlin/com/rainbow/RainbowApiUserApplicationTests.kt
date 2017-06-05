@@ -1,6 +1,5 @@
 package com.rainbow
 
-import com.rainbow.config.ApiConfig
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -19,15 +18,5 @@ class RainbowApiUserApplicationTests {
     fun contextLoads() {
     }
 
-    @Test
-    fun createApiConfig() {
-        val apiConfig = ApiConfig()
-
-        apiConfig.rainbowId = "rainbow123"
-        apiConfig.status = 1
-        apiConfig.userId = "rainbow123"
-
-        mongoTemplate.insert(apiConfig)
-    }
 
 }
