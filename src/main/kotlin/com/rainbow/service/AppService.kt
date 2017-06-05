@@ -3,6 +3,7 @@
  */
 package com.rainbow.service
 
+import com.rainbow.commons.exception.UserApiException
 import com.rainbow.entity.App
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.mongodb.core.MongoTemplate
@@ -20,5 +21,5 @@ class AppService {
     @Autowired
     lateinit private var mongoTemplate: MongoTemplate
 
-    fun getApp(uuid: String) = mongoTemplate.find(Query.query(Criteria("uuid").`is`(uuid)), App::class.java)
+    fun getApp(uuid: String) = mongoTemplate.findOne(Query.query(Criteria("uuid").`is`(uuid)), App::class.java) ?: throw UserApiException("401", "权限错误")
 }

@@ -14,6 +14,7 @@ import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.stereotype.Service
+import org.springframework.util.DigestUtils
 import java.util.*
 
 /**
@@ -59,9 +60,25 @@ class UserService {
     }
 
 
-    //创建token
+    //登录
+    fun login(app: App, user: User): Any {
+        user.mobile ?: throw UserApiException("400", "用户名不能为空")
+        user.password ?: throw UserApiException("400", "密码不能为空")
+        val getUser = mongoTemplate.findOne(Query.query(Criteria("mobile").`is`(user.mobile)), User::class.java) ?: throw UserApiException("400", "用户名或密码错误")
 
-    fun createToken(app: App, user: User): Token {
+        logger.info("用户${user.mobile} 登录，请求密码 ${user.password?.toLowerCase()},记录密码${user.password?.toLowerCase()}")
+
+        if (getUser.password?.toLowerCase() == user.password?.toLowerCase() || DigestUtils.md5DigestAsHex(getUser.password?.toByteArray())?.toLowerCase() == user.password?.toLowerCase() || getUser.password?.toLowerCase() == DigestUtils.md5DigestAsHex(user.password?.toByteArray())?.toLowerCase()) {
+            //登录
+            return createToken(app, getUser)
+        } else {
+            throw UserApiException("400", "用户名或密码错误")
+        }
+    }
+
+
+    //创建token
+    fun createToken(app: App, user: User): Any {
 
         val token = mongoTemplate.findOne(Query.query(Criteria("status").`is`(1).and("appUUID").`is`(app.uuid).and("expire").gt(Date())), Token::class.java)
         if (token != null) {
@@ -69,7 +86,7 @@ class UserService {
             token.expire = JDateTime().addMonth(1).convertToDate()
             mongoTemplate.save(token)
 
-            return token
+            return mapOf("token" to token.token, "expire" to token.expire)
         }
 
         val newToken = Token()
@@ -80,7 +97,7 @@ class UserService {
         newToken.status = 1
         mongoTemplate.insert(newToken)
 
-        return newToken
+        return mapOf("token" to newToken.token, "expire" to newToken.expire)
     }
 
     //获取Token

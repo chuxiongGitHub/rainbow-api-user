@@ -1,4 +1,4 @@
-package com.rainbow.controller
+package com.rainbow.controller.api
 
 import com.rainbow.entity.App
 import com.rainbow.entity.User
@@ -14,10 +14,14 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/v1/user")
 class UserController {
-    
+
     @Autowired
     lateinit private var userService: UserService
 
     @PostMapping("/register")
     fun register(@RequestAttribute app: App, @RequestBody user: User) = userService.register(app, user)
+
+
+    @PostMapping("/login")
+    fun login(@RequestAttribute app: App, @RequestBody user: User) = userService.login(app, user)
 }
