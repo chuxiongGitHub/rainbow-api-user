@@ -7,7 +7,7 @@ package com.rainbow.entity
  * 创建者：陈彩红 on 2017/6/4
  *每日进步一小点.
  */
-class UserIno {
+class UserInfo {
 
     //用户手机号
     var mobile: String? = null

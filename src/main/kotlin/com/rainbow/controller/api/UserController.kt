@@ -1,10 +1,14 @@
 package com.rainbow.controller.api
 
+import com.rainbow.commons.NeedUser
 import com.rainbow.entity.App
+import com.rainbow.entity.Platform
 import com.rainbow.entity.User
 import com.rainbow.service.UserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.mongodb.core.MongoTemplate
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 /**
@@ -24,4 +28,20 @@ class UserController {
 
     @PostMapping("/login")
     fun login(@RequestAttribute app: App, @RequestBody user: User) = userService.login(app, user)
+
+    @PostMapping("/bind")
+    fun bind(@RequestAttribute app: App, @RequestBody platform: Platform) = userService.bind(app, platform)
+
+    @NeedUser
+    @GetMapping("/info")
+    fun getUserInfo(@RequestAttribute userUUID: String) = userService.getUserInfo(userUUID)
+
+    @NeedUser
+    @PostMapping("/update")
+    fun update(@RequestAttribute userUUID: String, @RequestBody map: Map<String, String>): ResponseEntity<Any> {
+        val entity = map.entries.first()
+        userService.update(userUUID, entity.key, entity.value)
+        return ResponseEntity(null, HttpStatus.NO_CONTENT)
+
+    }
 }
