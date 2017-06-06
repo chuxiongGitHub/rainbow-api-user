@@ -51,6 +51,7 @@ class UserService {
         //默认为普通用户
         user.role = 0
         user.appUUID = app.uuid
+        user.password = DigestUtils.md5DigestAsHex(user.password!!.toByteArray())
         mongoTemplate.insert(user)
 
         map.put("success", true)
